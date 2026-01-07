@@ -1,0 +1,39 @@
+[project]
+name = "laundready"
+version = "0.1.0"
+description = "Detect washing machine beeps to notify when laundry is done."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["numpy>=2.4.0", "pyaudio>=0.2.14", "scipy>=1.16.3"]
+
+[dependency-groups]
+dev = ["matplotlib>=3.10.8", "ruff>=0.14.10"]
+
+[project.scripts]
+laundready = "laundready.__main__:main"
+
+[tool.uv]
+package = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A001",   # Variable is shadowing a Python builtin
+    "A002",   # Function argument is shadowing a Python builtin
+    "COM812", # Missing trailing comma in a single-element tuple
+    "D100",   # Missing docstring in public module
+    "D101",   # Missing docstring in public module
+    "D102",   # Missing docstring in public method
+    "D103",   # Missing docstring in public function
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in __init__
+    "D203",   # 1 blank line required before class docstring (conflicts with D211)
+    "D212",   # Multi-line docstring summary should start at the first line (conflicts with D213)
+    "EM102",  # Exception must not use an f-string literal
+    "G004",   # Logging statement uses f-string
+    "S101",   # Use of `assert` detected
+    "S113",   # Probable use of `requests` call without timeoutRuff
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "EM101",  # Exception must not use a string literal
+]
