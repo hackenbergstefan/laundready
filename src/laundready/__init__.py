@@ -2,9 +2,9 @@ import logging
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
-import paho.mqtt.client as mqtt
 
 import numpy as np
+import paho.mqtt.client as mqtt
 import pyaudio
 import scipy.signal
 
@@ -35,6 +35,7 @@ def butter_bandpass(
 
     Returns:
         Filtered signal as a numpy array normaled to max amplitude of 1.
+
     """
     nyq = 0.5 * sampling_frequency
     minmax = np.array(minmax) / nyq
@@ -63,6 +64,7 @@ def bandpass_trigger(
 
     Returns:
         List of indices where triggers occur.
+
     """
     data = butter_bandpass(data, minmax, sampling_frequency)
     if VISUAL_DEBUG:
@@ -80,9 +82,7 @@ def normalized_fftconvolve(
     data: np.typing.ArrayLike,
     sample: np.typing.ArrayLike,
 ) -> np.ndarray:
-    """
-    Perform FFT convolution between data and sample and normalize output to -1.0 .. 1.0.
-    """
+    """Perform FFT convolution and normalize output to -1.0 .. 1.0."""
     conv = scipy.signal.fftconvolve(
         data,
         sample,
@@ -92,15 +92,15 @@ def normalized_fftconvolve(
     return conv
 
 
-def search_sample(
+def search_sample(  # noqa: PLR0913
     data: np.typing.ArrayLike,
     sample: np.typing.ArrayLike,
     sampling_frequency: int,
     bandpass_minmax: tuple[int, int],
-    bandpass_threshold=0.1,
-    conv_threshold=0.003,
+    bandpass_threshold: float = 0.1,
+    conv_threshold: float = 0.003,
 ) -> list[int]:
-    """Search for occurrences of sample in data using bandpass filtering and convolution."""
+    """Search for occurrences of sample in data."""
     starts = bandpass_trigger(
         data,
         minmax=bandpass_minmax,

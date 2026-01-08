@@ -1,6 +1,5 @@
 import logging
 from configparser import ConfigParser
-import time
 
 import paho.mqtt.client as mqtt
 

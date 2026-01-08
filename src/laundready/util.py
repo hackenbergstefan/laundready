@@ -17,7 +17,7 @@ def wave_read(path: str) -> np.ndarray:
     return sampling_frequency, data
 
 
-def wave_write(path: str, data: np.typing.ArrayLike, sampling_frequency: int):
+def wave_write(path: str, data: np.typing.ArrayLike, sampling_frequency: int) -> None:
     """Write normalized data to a WAV file with given sampling frequency."""
     # Normalize to 0 .. 255
     assert np.max(data) <= 1.0 and np.min(data) >= -1.0  # noqa: PT018
