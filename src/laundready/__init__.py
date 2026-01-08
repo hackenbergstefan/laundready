@@ -2,12 +2,13 @@ import logging
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
+import paho.mqtt.client as mqtt
 
 import numpy as np
 import pyaudio
 import scipy.signal
 
-from .util import wave_read
+from .util import wave_read, wave_write
 
 VISUAL_DEBUG = False
 
@@ -102,8 +103,8 @@ def search_sample(
     """Search for occurrences of sample in data using bandpass filtering and convolution."""
     starts = bandpass_trigger(
         data,
-        sampling_frequency,
         minmax=bandpass_minmax,
+        sampling_frequency=sampling_frequency,
         threshold=bandpass_threshold,
         distance=len(sample),
     )
@@ -159,7 +160,11 @@ class Laundready:
             while True:
                 if last is None:
                     last = np.frombuffer(stream.read(len(self.sample)), dtype=np.uint8)
+                    last = last.astype(np.float32)
+                    last = (last - 127) / 128
                 cur = np.frombuffer(stream.read(len(self.sample)), dtype=np.uint8)
+                cur = cur.astype(np.float32)
+                cur = (cur - 127) / 128
                 data = np.concatenate((last, cur))
                 if search_sample(
                     data,
@@ -170,7 +175,35 @@ class Laundready:
                     self.conv_threshold,
                 ):
                     self.detected()
+
+                wave_write("debug.wav", data, self.sampling_frequency)
                 last = cur
 
     def detected(self) -> None:
         _log.info("Laundready: Detected sample!")
+
+
+class MqttLaundready(Laundready):
+    def __init__(  # noqa: PLR0913
+        self,
+        sample: str | Path,
+        sampling_frequency: int,
+        mqtt: mqtt.Client,
+        mqtt_topic: str = "laundready/detected",
+        bandpass_minmax: tuple[int, int] = (2350, 2400),
+        bandpass_threshold: float = 0.1,
+        conv_threshold: float = 0.003,
+    ) -> None:
+        super().__init__(
+            sample,
+            sampling_frequency,
+            bandpass_minmax,
+            bandpass_threshold,
+            conv_threshold,
+        )
+        self.mqtt = mqtt
+        self.mqtt_topic = mqtt_topic
+
+    def detected(self) -> None:
+        super().detected()
+        self.mqtt.publish(self.mqtt_topic)

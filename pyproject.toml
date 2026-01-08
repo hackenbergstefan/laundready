@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Detect washing machine beeps to notify when laundry is done."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["numpy>=2.4.0", "pyaudio>=0.2.14", "scipy>=1.16.3"]
+dependencies = [
+    "numpy>=2.4.0",
+    "paho-mqtt>=2.1.0",
+    "pyaudio>=0.2.14",
+    "scipy>=1.16.3",
+]
 
 [dependency-groups]
 dev = ["matplotlib>=3.10.8", "ruff>=0.14.10"]
