@@ -30,8 +30,9 @@ def main() -> None:
     )
     mqtt_client.username_pw_set(mqtt_user, mqtt_password)
     mqtt_client.connect(mqtt_host)
+    mqtt_client.loop_start()
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     laundready = MqttLaundready(
         sample=sample_path,

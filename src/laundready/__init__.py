@@ -115,9 +115,9 @@ def search_sample(  # noqa: PLR0913
             data[s : s + 2 * len(sample)],
             sample,
         )
-        _log.debug(f"search_sample: Search at {s} -> {conv.max()}")
+        _log.log(5, f"search_sample: Search at {s} -> {conv.max()}")
         if conv.max() > conv_threshold:
-            _log.info(
+            _log.debug(
                 f"search_sample: Found sample at {s + conv.argmax()} with {conv.max()}"
             )
             occurrences.append(int(s + conv.argmax()))
@@ -209,6 +209,7 @@ class MqttLaundready(Laundready):
 
     def detected(self) -> None:
         super().detected()
+        _log.debug(f"MqttLaundready: Publishing MQTT message to {self.mqtt_topic}")
         self.mqtt.publish(
             self.mqtt_topic,
             payload=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
