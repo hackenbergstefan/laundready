@@ -1,4 +1,5 @@
 import logging
+import time
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
@@ -116,7 +117,9 @@ def search_sample(  # noqa: PLR0913
         )
         _log.debug(f"search_sample: Search at {s} -> {conv.max()}")
         if conv.max() > conv_threshold:
-            _log.info(f"search_sample: Found sample at {s + conv.argmax()}")
+            _log.info(
+                f"search_sample: Found sample at {s + conv.argmax()} with {conv.max()}"
+            )
             occurrences.append(int(s + conv.argmax()))
     return occurrences
 
@@ -206,4 +209,7 @@ class MqttLaundready(Laundready):
 
     def detected(self) -> None:
         super().detected()
-        self.mqtt.publish(self.mqtt_topic)
+        self.mqtt.publish(
+            self.mqtt_topic,
+            payload=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())),
+        )
